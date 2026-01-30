@@ -1,26 +1,188 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --background: #050505;
+  --foreground: #ffffff;
+  --primary: #00f2ea;
+  --secondary: #ff0050;
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.05);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(0, 242, 234, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 100% 0%, rgba(255, 0, 80, 0.05) 0%, transparent 40%);
+}
+
+.magic-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  position: relative;
+  z-index: 10;
+}
+
+/* Magic Button */
+.magic-btn {
+  position: relative;
+  background: transparent;
+  border: 1px solid var(--glass-border);
+  color: var(--primary);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  padding: 1.5rem 4rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  border-radius: 4px;
+  box-shadow: 
+    0 0 10px rgba(0, 242, 234, 0.1),
+    inset 0 0 20px rgba(0, 242, 234, 0.05);
+}
+
+.magic-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 242, 234, 0.2),
+    transparent
+  );
+  transition: 0.5s;
+}
+
+.magic-btn:hover {
+  background: rgba(0, 242, 234, 0.1);
+  box-shadow: 
+    0 0 30px rgba(0, 242, 234, 0.3),
+    0 0 60px rgba(0, 242, 234, 0.1),
+    inset 0 0 20px rgba(0, 242, 234, 0.1);
+  border-color: rgba(0, 242, 234, 0.5);
+  text-shadow: 0 0 10px rgba(0, 242, 234, 0.8);
+  transform: scale(1.05);
+}
+
+.magic-btn:hover::before {
+  left: 100%;
+}
+
+.magic-btn:active {
+  transform: scale(0.98);
+}
+
+/* Progress Container */
+.progress-container {
+  width: 300px;
+  text-align: center;
+  opacity: 0;
+  animation: fadeIn 0.5s forwards;
+}
+
+.progress-label {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 4px;
+  background: var(--glass-border);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--primary);
+  box-shadow: 0 0 10px var(--primary);
+  width: 0%;
+  transition: width 0.1s linear;
+  position: relative;
+}
+
+.progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 5px;
+  background: #fff;
+  box-shadow: 0 0 10px #fff;
+}
+
+/* Success State */
+.success-msg {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-shadow: 0 0 20px rgba(0, 242, 234, 0.5);
+  animation: successPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.success-sub {
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+@keyframes successPop {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Background Particles (Simple Implementation via CSS) */
+.scanline {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    transparent 50%,
+    rgba(0, 0, 0, 0.2) 51%
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.vignette {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, transparent 60%, black 100%);
+  pointer-events: none;
+  z-index: 6;
 }
