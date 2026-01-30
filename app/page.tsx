@@ -10,7 +10,7 @@ export default function Home() {
   // Refs to handle the loop and stopping
   const isDownloading = useRef(false);
   const totalTarget = 1000 * 1024 * 1024 * 1024; // 1TB in bytes
-  const CHUNK_SIZE = 500 * 1024 * 1024; // 100MB per file
+  const CHUNK_SIZE = 1000 * 1024 * 1024; // 1000MB per file
 
   const generateAndDownload = async () => {
     if (!isDownloading.current) return;
