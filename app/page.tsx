@@ -16,26 +16,23 @@ export default function Home() {
     if (!isDownloading.current) return;
 
     try {
-      // 1. Generate a 1GB Blob (using a smaller buffer repeated might be more memory efficient, 
-      // but creating a defined size TypedArray is fastest for allocation)
-      // Warning: 1GB allocation might fail on some browsers/devices. 
-      // We'll wrap in try/catch to handle OOM.
-      const buffer = new Uint8Array(CHUNK_SIZE);
-      // No need to fill it with data, zeros are fine for "magic"
-      const blob = new Blob([buffer], { type: "application/octet-stream" });
-      const url = URL.createObjectURL(blob);
+      // 1. Trigger Download via API
+      // We use a hidden iframe or simple window location to avoid memory issues, 
+      // but 'a' tag click is standard. 
+      // Important: Browsers might limit concurrent downloads from same domain.
+      const url = `/api/download?size=${CHUNK_SIZE}`;
 
-      // 2. Trigger Download
       const a = document.createElement("a");
       a.href = url;
-      a.download = `magic_data_shard_${Date.now()}.bin`;
+      // Filename is set by Content-Disposition header in the API
+      a.style.display = 'none';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      // Clean up URL object after a short delay to allow download to start
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
 
       // 3. Update State
+      // Since we can't easily track server-side download progress client-side without more complex WebSockets,
+      // we assume success for the simulation visualizer.
       setDownloadedBytes(prev => {
         const newVal = prev + CHUNK_SIZE;
         if (newVal >= totalTarget) {
@@ -48,13 +45,12 @@ export default function Home() {
 
       // 4. Loop if active and not complete
       if (isDownloading.current) {
-        // Small delay to prevent freezing the UI completely
-        setTimeout(generateAndDownload, 500);
+        // Delay is needed to not overwhelm the browser's download manager
+        setTimeout(generateAndDownload, 1000);
       }
 
     } catch (error) {
-      console.error("Storage/Memory Error:", error);
-      alert("Magic Overload: Browser ran out of memory or disk space.");
+      console.error("Download Error:", error);
       stopMagic();
     }
   };
